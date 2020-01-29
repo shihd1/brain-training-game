@@ -29,6 +29,9 @@ var imgPkg1;
 
 var avatar = [];
 
+var testmx=[];
+var testmy=[];
+
 function setup(){
     let cnv = createCanvas(1420,750);
     cnv.parent('game');
@@ -52,8 +55,18 @@ function preload(){
 }
 function draw(){
     if(switchToGame == true){
+        if(mouseIsPressed){
+            cursor('hammer2.png');
+        }else{
+            cursor('hammer.png');
+        }
         drawGame();
         playGame();
+
+        // test
+        for (let index = 0; index < testmx.length; index++) {
+            circle( testmx[index],testmy[index],130);
+        }
     }else{
         drawMenu();
     }
@@ -134,6 +147,8 @@ function drawMenu(){
     }
 function drawGame(){
     image(img_planet_background,0,0,1420,750);
+    strokeWeight(5);
+    text(planetText[planetI][planetJ], 1080,50);
 }
 function playGame(){
     for (let index = 0; index < lngth; index++) {
@@ -143,7 +158,7 @@ function playGame(){
     }
     if(currentTime == timeInterval){
         currentTime = 0;
-        if(lngth != 22){
+        if(lngth < avatar.length){
             lngth++;
         }
     }else{
@@ -168,7 +183,7 @@ function mouseClicked(){
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 5; j++) {
             if(j < locked[i]){
-                if(dist(150+(170*j),160+(210*i),mouseX,mouseY)<65){
+                if(dist(150+(170*j),160+(210*i),mouseX+32,mouseY+32)<65){
                     planetI = i;
                     planetJ = j;
                     return;
@@ -192,4 +207,8 @@ function mouseClicked(){
             tempA.hit = true;
         }
     }
+
+    // test
+    testmx.push(mouseX+32) ;
+    testmy.push(mouseY+32) ;
 }
