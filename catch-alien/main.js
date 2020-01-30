@@ -91,6 +91,7 @@ function setup() {
     userStartAudio().then(function() {     
         // sound 
         sound_bg.setVolume(0.1);
+        sound_bg.stop();
         sound_bg.play();
      });
 
@@ -264,9 +265,15 @@ function start_UI() {
 
         noStroke();
         let xx = width * lv / 5;
+        let available_level = false ;
+        if ( lv <= game_maxlevel || 
+            (lv == game_maxlevel + 1)&&(game_level_score[game_maxlevel-1]>=250)    
+            ) {
+            available_level = true ;
+        }
 
-        if (game_level_score[lv - 1] != -1 || lv <= game_maxlevel + 1) {
-            // available
+        // rectangle
+        if( available_level){
             fill(10, 10, 10, 200);
 
             if (game_level_selected == lv) {
@@ -276,20 +283,20 @@ function start_UI() {
             if (mouseX > xx - 90 && mouseX < xx + 90) {
                 game_level_selected = lv;
             }
-        } else {
+        }else{
             fill(100, 100, 100, 200);
         }
-
-
         rect(xx, yy, 180, 180);
+        
         // text
         textSize(60);
-        if (game_level_score[lv - 1] != -1 || lv <= game_maxlevel + 1) {
+        if ( available_level ) {
             fill(217, 85, 168);
         } else {
             fill(150, 150, 150, 200);
         }
         text("LV " + lv, xx - 58, yy - 10);
+
         // score
         textSize(40);
         fill(225);
@@ -302,7 +309,8 @@ function start_UI() {
 
     noStroke();
     fill(255);
-    showTextAlignCenter("按下［S］開始遊戲", height * 9 / 10, 60);
+    showTextAlignCenter("按下［S］開始遊戲", height * 8.9 / 10, 60);
+    showTextAlignCenter( "達到 250 分，可以前進下一關",height*9.6/10,22) ;
 }
 
 function showTextAlignCenter(text_content, ty, tsize) {
@@ -321,11 +329,6 @@ function keyPressed() {
         game_level_avatar_passed=0;
         GAME_STAGE=STAGE_PRE ;
 
-        // if( game_level_score[game_level_selected-1] > 0 ){
-        //     game_score = game_level_score[game_level_selected-1] ;
-        // }else{
-        //     game_score = 0 ;
-        // }
         game_score = 0 ;
         target_question = genFeatureAtLevel(game_level_selected);
         sprites = [];
@@ -342,7 +345,7 @@ function replay_sound(){
 function load_data(){
     usr_name = localStorage.getItem(LD_KEY_user);
     let glevelInfo = localStorage.getItem(LD_KEY_level_score);
-    game_maxlevel = 0;
+    game_maxlevel = 1;
     if (glevelInfo != null) {
         let tokens = glevelInfo.split(":");
         for (let i = 0; i < 4; i++) {
