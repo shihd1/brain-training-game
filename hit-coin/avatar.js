@@ -8,7 +8,8 @@ class Avatar {
         this.random = floor(random(0, 2));
         this.hit = false;
         this.iFrame = 0;
-        this.speed_y = -10;
+        this.speed_y = -8;
+        this.gravity = 0.1;
         this.death = false;
     }
     draw() {
@@ -32,7 +33,7 @@ class Avatar {
     }
     jump() {
         if(this.iFrame < 1){
-            this.speed_y += 0.2; //gravity
+            this.speed_y += this.gravity;
             this.y += this.speed_y;
         }
         

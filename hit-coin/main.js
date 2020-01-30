@@ -3,6 +3,9 @@ var iFrame = 0;
 
 var currentTime = 0;
 var lngth = 1;
+var numCoins = 0;
+var score;
+var statusText = "You got a 100% accuracy \n You pass this level!";
 var timeInterval = 50;
 
 var planetI = -100;
@@ -15,7 +18,8 @@ var planetText = [
 
 var sound_bg;
 
-var switchToGame;
+var displayStatus = false;
+var switchToGame = false;
 
 var locked = [1,2,3];
 
@@ -44,6 +48,9 @@ function setup(){
     imgPkg1 = new ImgPackage(img_planets,64,64);
     for (let i = 0; i< 23; i++) {
         avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
+        if(avatar[i].random != 0){
+            numCoins++;
+        }
     }
     userStartAudio().then(function(){
         sound_bg.setVolume(0.1);
@@ -64,9 +71,9 @@ function draw(){
         playGame();
 
         // test
-        for (let index = 0; index < testmx.length; index++) {
-            circle( testmx[index],testmy[index],130);
-        }
+        // for (let index = 0; index < testmx.length; index++) {
+        //     circle( testmx[index],testmy[index],130);
+        // }
     }else{
         drawMenu();
     }
@@ -148,7 +155,25 @@ function drawMenu(){
 function drawGame(){
     image(img_planet_background,0,0,1420,750);
     strokeWeight(5);
-    text(planetText[planetI][planetJ], 1080,50);
+    text(planetText[planetI][planetJ], 1000,50);
+    score = 0;
+    for (let index = 0; index < lngth; index++) {
+        const tempA = avatar[index];
+        if(tempA.hit == true){
+            if(tempA.random == 0){
+                score-=50;
+            }else{
+                score+=50;
+            }
+        }
+    }
+    text("Score: "+score+"/"+(numCoins*50),1000,100);
+    if(displayStatus == true){
+        rect(400,200,650,300);
+        text(statusText,450,300);
+        rect(650,400,140,70);
+        text("OK",680,450);
+    }
 }
 function playGame(){
     for (let index = 0; index < lngth; index++) {
@@ -163,6 +188,14 @@ function playGame(){
         }
     }else{
         currentTime++;
+    }
+    if(avatar[avatar.length-1].death){
+        if(score==numCoins*50){
+            statusText = "You got a 100% accuracy \n You pass this level!";
+        }else{
+            statusText = "Sorry, try again!";
+        }
+        displayStatus = true;
     }
 }
 function keyPressed() {
@@ -180,31 +213,54 @@ function keyPressed() {
     console.log(x);
 }
 function mouseClicked(){
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 5; j++) {
-            if(j < locked[i]){
-                if(dist(150+(170*j),160+(210*i),mouseX+32,mouseY+32)<65){
-                    planetI = i;
-                    planetJ = j;
-                    return;
+    if(switchToGame == false){
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 5; j++) {
+                if(j < locked[i]){
+                    if(dist(150+(170*j),160+(210*i),mouseX+32,mouseY+32)<65){
+                        planetI = i;
+                        planetJ = j;
+                        return;
+                    }
                 }
             }
         }
-    }
-    if(mouseX > 1080 && mouseX < 1280 && mouseY > 530 && mouseY < 630){
-        console.log("play");
-        if(planetI != -100){
-            console.log("switch to game: "+planetI+", "+planetJ);
-            switchToGame = true;
+        if(mouseX > 1080 && mouseX < 1280 && mouseY > 530 && mouseY < 630){
+            console.log("play");
+            if(planetI != -100){
+                console.log("switch to game: "+planetI+", "+planetJ);
+                switchToGame = true;
+            }
+            
         }
-        
     }
-    for (let index = 0; index < lngth; index++) {
-        const tempA = avatar[index];
-        let dd = dist(mouseX,mouseY,tempA.x+60,tempA.y+60);
-        if(dd < 40){
-            console.log("hit: "+dd);
-            tempA.hit = true;
+    if(switchToGame == true){
+        for (let index = 0; index < lngth; index++) {
+            const tempA = avatar[index];
+            let dd = dist(mouseX,mouseY,tempA.x+60,tempA.y+60);
+            if(dd < 40){
+                console.log("hit: "+dd);
+                tempA.hit = true;
+            }
+        }
+    }
+    if(displayStatus == true){
+        if(mouseX > 650 && mouseX < 790 && mouseY > 400 && mouseY < 470){
+            switchToGame = false;
+            if(score==numCoins*50){
+                locked[planetI]++;
+            }
+            cursor(ARROW);
+            displayStatus = false;
+            score = 0;
+            numCoins = 0;
+            avatar = [];
+            for (let i = 0; i< 23; i++) {
+                avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
+                if(avatar[i].random != 0){
+                    numCoins++;
+                }
+            }
         }
     }
 
