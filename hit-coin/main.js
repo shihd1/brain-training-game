@@ -22,6 +22,7 @@ var displayStatus = false;
 var switchToGame = false;
 
 var locked = [1,2,3];
+var accuracy = [ [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0] ];
 
 var img_coin;
 var img_space_background;
@@ -46,12 +47,7 @@ function setup(){
     imgPkg = new ImgPackage(img_angry_animation,256,256);
     img_planets = loadImage("planets.png");
     imgPkg1 = new ImgPackage(img_planets,64,64);
-    for (let i = 0; i< 23; i++) {
-        avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
-        if(avatar[i].random != 0){
-            numCoins++;
-        }
-    }
+    reset();
     userStartAudio().then(function(){
         sound_bg.setVolume(0.1);
         sound_bg.play();
@@ -69,11 +65,6 @@ function draw(){
         }
         drawGame();
         playGame();
-
-        // test
-        // for (let index = 0; index < testmx.length; index++) {
-        //     circle( testmx[index],testmy[index],130);
-        // }
     }else{
         drawMenu();
     }
@@ -113,7 +104,8 @@ function drawMenu(){
         noStroke();
         rect(980,50,400,640,10);
             stroke(79,232,222);
-            circle(1180, 200, 200);
+            circle(1130, 200, 200);
+            rect(1270,100,50,200);
             rect(1000,330,360,150,20);
             rect(1080,530,200,100,20);
         
@@ -124,16 +116,24 @@ function drawMenu(){
             fill(255,255,255,100);
             strokeWeight(5);
             circle(150+(170*planetJ),160+(210*planetI),130);
-        
             //selected menu: planet
-            imgPkg1.showAtCenter(planetJ,planetI,1180,200,3.6);
+            imgPkg1.showAtCenter(planetJ,planetI,1130,200,3.6);
             strokeWeight(8);
             noFill();
-            circle(1180, 200, 200);
+            circle(1130, 200, 200);
+            //selected menu: accuracy
+            noStroke();
+            fill(0, 153, 255);
+            rect(1270, 100+200*(1-accuracy[planetI][planetJ]), 50, 200*accuracy[planetI][planetJ]);
+            strokeWeight(5);
+            stroke(79,232,222);
+            noFill();
+            rect(1270,100,50,200);
             //selected menu: words
             strokeWeight(2);
             fill(0,0,0);
             textSize(50);
+            stroke(79,232,222);
             text(planetText[planetI][planetJ],1020,420);
             //selected menu: play
             fill(0,0,0);
@@ -190,12 +190,25 @@ function playGame(){
         currentTime++;
     }
     if(avatar[avatar.length-1].death){
-        if(score==numCoins*50){
-            statusText = "You got a 100% accuracy \n You pass this level!";
+        if((score/(numCoins*50)) >= 0.6){
+            statusText = "You pass this level!";
         }else{
             statusText = "Sorry, try again!";
         }
         displayStatus = true;
+    }
+}
+function reset(){
+    cursor(ARROW);
+    score = 0;
+    numCoins = 0;
+    avatar = [];
+    lngth = 1;
+    for (let i = 0; i< 23; i++) {
+        avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
+        if(avatar[i].random != 0){
+            numCoins++;
+        }
     }
 }
 function keyPressed() {
@@ -214,6 +227,16 @@ function keyPressed() {
 }
 function mouseClicked(){
     if(switchToGame == false){
+        mouseClickedOnMenu();
+    }
+    if(switchToGame == true){
+        mouseClickedOnGame();
+    }
+    if(displayStatus == true){
+        mouseClickedOnGamePanel();
+    }
+}
+    function mouseClickedOnMenu(){
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 5; j++) {
                 if(j < locked[i]){
@@ -234,7 +257,7 @@ function mouseClicked(){
             
         }
     }
-    if(switchToGame == true){
+    function mouseClickedOnGame(){
         for (let index = 0; index < lngth; index++) {
             const tempA = avatar[index];
             let dd = dist(mouseX,mouseY,tempA.x+60,tempA.y+60);
@@ -244,27 +267,16 @@ function mouseClicked(){
             }
         }
     }
-    if(displayStatus == true){
+    function mouseClickedOnGamePanel(){
         if(mouseX > 650 && mouseX < 790 && mouseY > 400 && mouseY < 470){
             switchToGame = false;
-            if(score==numCoins*50){
+            if((score/(numCoins*50)) >= 0.6 && planetJ+1 == locked[planetI]){
                 locked[planetI]++;
             }
-            cursor(ARROW);
-            displayStatus = false;
-            score = 0;
-            numCoins = 0;
-            avatar = [];
-            for (let i = 0; i< 23; i++) {
-                avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
-                if(avatar[i].random != 0){
-                    numCoins++;
-                }
+            if((score/(numCoins*50)) > accuracy[planetI][planetJ]){
+                accuracy[planetI][planetJ] = score/(numCoins*50)
             }
+            displayStatus = false;
+            reset();
         }
     }
-
-    // test
-    testmx.push(mouseX+32) ;
-    testmy.push(mouseY+32) ;
-}
