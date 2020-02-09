@@ -17,12 +17,51 @@ class DataEngine {
         }
 
         // db field_name
+        this.FN_ADMIN = 'admin' ;
         this.FN_TOTAL_LV = 'total-level';
         this.FN_P_COUNT = 'play-count';
         this.FN_RECORD = 'record';
         this.FN_DATETIME = 'datetime';
         this.FN_SCORE = 'score';
     }
+
+    ///////////////////////////
+    // admin-user related
+    ///////////////////////////
+
+    create_admin_password(pwd) {
+        if (this.db[ this.FN_ADMIN ] != null) {
+            console.log('admin had existed !!');
+            return false;
+        } else {            
+            this.db[this.FN_ADMIN ] = atob(pwd);
+            console.log('set admin pwd: successed!!');
+            return true;
+        }
+    }
+
+    check_admin_is_valid(pwd) {
+        if (this.db[this.FN_ADMIN] != null) {
+            if (this.db[this.FN_ADMIN] === atob(pwd)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    force_reset_admin_password(pwd) {
+        var ikey = window.prompt( "⚠️ 注意：重設密碼，所有資料都將清除！！如果要繼續，請輸入「好的」") ;       
+        if( ikey==='好的'){
+            this.db = {};
+            this.db[this.FN_ADMIN ] = atob(pwd);
+            console.log('set admin pwd: successed!!');
+            return true;
+        }
+        return false ;
+        
+    }
+
+
 
     ///////////////////////////
     // user related
