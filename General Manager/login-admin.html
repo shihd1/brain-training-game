@@ -19,6 +19,8 @@
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="vendor/sweet/sweetalert.css">
+
 
 </head>
 
@@ -43,24 +45,22 @@
                   </div>
                   <form class="user">
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="pwd1" placeholder="請輸入密碼">
+                      <input type="text" class="form-control form-control-user" id="id" placeholder="帳號">
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="pwd2" placeholder="重新輸入密碼">
+                      <input type="password" class="form-control form-control-user" id="pwd" placeholder="密碼">
                     </div>
-                    <div class="form-group">
-                      <small class="form-text text-muted">這是您第一次使用系統，請設定密碼。</small>
-                    </div>
-                    <div class="btn btn-primary btn-user btn-block" onclick="reset_pwd();">
-                      送出
+
+                    <div class="btn btn-primary btn-user btn-block" onclick="login();">
+                      登 入
                     </div>
                   </form>
                   <hr>
-                  <div class="text-center">
+                  <!-- <div class="text-center">
                     <a class="small" href="forgot-password.html">Forgot Password?</a>
-                  </div>
+                  </div> -->
                   <div class="text-center">
-                    <a class="small" href="register.html">Create an Account!</a>
+                    <a class="small" href="register.html">建立新帳號</a>
                   </div>
                 </div>
               </div>
@@ -76,18 +76,71 @@
 
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>  
+  <script src="vendor/sweet/sweetalert.min.js"></script>
 
   <!-- Core plugin JavaScript-->
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
+  <script src="js/dataengine.js"></script>
+
 
   <script>
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
 
-    function reset_pwd() {
-      window.alert("hi");
+    function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+
+    function login() {
+      
+
+      // !!!!!!!!! 登入失敗，密碼編碼後會驗證失敗！
+      // 
+      let uid = $('#id').val();
+      let pwd = $('#pwd').val();
+
+
+      var my_db = new DataEngine(uid);
+      var pass = my_db.check_admin_is_valid(pwd) ;
+
+      if( pass==true ){
+        setCookie('admin', uid, 0.1) ; 
+      }else{
+        my_alert('帳號密碼錯誤！！')
+      }
+
+    }
+
+    function my_alert(text) {
+      swal({
+        title: "",
+        text: text,
+        type: "error",
+        showCancelButton: false,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "確認",
+        closeOnConfirm: false
+      });
     }
 
     $(document).ready(function () {
