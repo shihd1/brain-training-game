@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 
 <head>
 
@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Register</title>
+  <title>知能訓練系統 - 輔導員管理</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -125,44 +125,13 @@
       my_db.create_admin_password(pwd);
       my_db.save_to_localstorage();
 
+      my_info_redirect('帳號 [ ' + uid + ' ] 新增成功，請登入系統！！','login-admin.html',3) ;
 
 
-      swal({
-        title: "",
-        text: '帳號 [ ' + uid + ' ] 新增成功，請登入系統！！',
-        type: "info",
-        showCancelButton: false,
-        closeOnConfirm: false,
-        showLoaderOnConfirm: true
-      }, function () {
-        setTimeout(function () {
-          location = 'login-admin.html';
-        }, 2000);
-      });
+     
     }
 
-    function my_alert(text) {
-      swal({
-        title: "",
-        text: text,
-        type: "error",
-        showCancelButton: false,
-        confirmButtonClass: "btn-danger",
-        confirmButtonText: "確認",
-        closeOnConfirm: false
-      });
-    }
-    function my_info(text) {
-      swal({
-        title: "",
-        text: text,
-        type: "info",
-        showCancelButton: false,
-        confirmButtonClass: "btn-info",
-        confirmButtonText: "確認",
-        closeOnConfirm: false
-      });
-    }
+   
   </script>
 
 </body>

@@ -11,9 +11,11 @@ class DataEngine {
         }
 
         // retrieve data from localstorage
-        this.db = localStorage.getItem(this.data_id);
+        this.db =  localStorage.getItem(this.data_id);
         if (this.db == null) {
             this.db = {};
+        }else{
+            this.db = JSON.parse(this.db);
         }
 
         // db field_name
@@ -34,7 +36,7 @@ class DataEngine {
             console.log('admin had existed !!');
             return false;
         } else {            
-            this.db[this.FN_ADMIN ] = atob(pwd);
+            this.db[this.FN_ADMIN ] = btoa(pwd);
             console.log('set admin pwd: successed!!');
             return true;
         }
@@ -42,7 +44,7 @@ class DataEngine {
 
     check_admin_is_valid(pwd) {
         if (this.db[this.FN_ADMIN] != null) {
-            if (this.db[this.FN_ADMIN] === atob(pwd)) {
+            if (this.db[this.FN_ADMIN] === btoa(pwd)) {
                 return true;
             }
         }
@@ -53,7 +55,7 @@ class DataEngine {
         var ikey = window.prompt( "⚠️ 注意：重設密碼，所有資料都將清除！！如果要繼續，請輸入「好的」") ;       
         if( ikey==='好的'){
             this.db = {};
-            this.db[this.FN_ADMIN ] = atob(pwd);
+            this.db[this.FN_ADMIN ] = btoa(pwd);
             console.log('set admin pwd: successed!!');
             return true;
         }
@@ -73,7 +75,7 @@ class DataEngine {
             return false;
         } else {
             this.db[uid] = {};
-            this.db[uid]['pwd'] = atob(pwd);
+            this.db[uid]['pwd'] = btoa(pwd);
             console.log('create user : successed!! : ' + uid);
             return true;
         }
@@ -81,7 +83,7 @@ class DataEngine {
 
     check_user_is_valid(uid, pwd) {
         if (this.db[uid] != null) {
-            if (this.db[uid].pwd === atob(pwd)) {
+            if (this.db[uid].pwd === btoa(pwd)) {
                 return true;
             }
         }
@@ -91,7 +93,7 @@ class DataEngine {
     reset_usr_password(uid, old_pwd, new_pwd) {
 
         if (this.check_user_is_valid(uid, old_pwd)) {
-            this.db[uid]['pwd'] = atob(new_pwd);
+            this.db[uid]['pwd'] = btoa(new_pwd);
             console.log('reset password : successed!!');
             return true;
         }
@@ -214,3 +216,70 @@ class DataEngine {
     }
 
 }
+
+///////////////////////////////////////////////////
+// Utilities
+///////////////////////////////////////////////////
+
+function my_alert(text) {
+    swal({
+      title: "",
+      text: text,
+      type: "error",
+      showCancelButton: false,
+      confirmButtonClass: "btn-danger",
+      confirmButtonText: "確認",
+      closeOnConfirm: false
+    });
+  }
+  function my_info(text) {
+    swal({
+      title: "",
+      text: text,
+      type: "info",
+      showCancelButton: false,
+      confirmButtonClass: "btn-info",
+      confirmButtonText: "確認",
+      closeOnConfirm: false
+    });
+  }
+
+  
+  function my_info_redirect( info_text , target_page , sec){
+    swal({
+        title: "",
+        text: info_text,
+        type: "info",
+        showCancelButton: false,
+        closeOnConfirm: false,
+        confirmButtonClass: "btn-info",
+      confirmButtonText: "確認",
+        showLoaderOnConfirm: true
+      }, function () {
+        setTimeout(function () {
+          location = target_page;
+        }, sec*1000);
+      });
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }

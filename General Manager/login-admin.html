@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 
 <head>
 
@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>輔導員系統</title>
+  <title>知能訓練系統 - 輔導員管理</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -77,71 +77,37 @@
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>  
-  <script src="vendor/sweet/sweetalert.min.js"></script>
+
 
   <!-- Core plugin JavaScript-->
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
+  <script src="vendor/sweet/sweetalert.min.js"></script>
   <script src="js/dataengine.js"></script>
 
 
   <script>
-    function setCookie(cname, cvalue, exdays) {
-      var d = new Date();
-      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-      var expires = "expires=" + d.toUTCString();
-      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    }
+   
 
-    function getCookie(cname) {
-      var name = cname + "=";
-      var ca = document.cookie.split(';');
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }
+    function login() {      
 
-
-    function login() {
-      
-
-      // !!!!!!!!! 登入失敗，密碼編碼後會驗證失敗！
-      // 
       let uid = $('#id').val();
       let pwd = $('#pwd').val();
-
 
       var my_db = new DataEngine(uid);
       var pass = my_db.check_admin_is_valid(pwd) ;
 
       if( pass==true ){
         setCookie('admin', uid, 0.1) ; 
+        my_info_redirect('登入成功！歡迎回來 😃','index.html',3) ;
       }else{
         my_alert('帳號密碼錯誤！！')
       }
 
     }
 
-    function my_alert(text) {
-      swal({
-        title: "",
-        text: text,
-        type: "error",
-        showCancelButton: false,
-        confirmButtonClass: "btn-danger",
-        confirmButtonText: "確認",
-        closeOnConfirm: false
-      });
-    }
 
     $(document).ready(function () {
       console.log("ready!");
