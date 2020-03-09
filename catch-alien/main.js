@@ -343,7 +343,10 @@ function replay_sound(){
 }
 
 function load_data(){
-    usr_name = localStorage.getItem(LD_KEY_user);
+
+    usr_name = prompt('請輸入您的帳號') ;
+
+    //usr_name =''+ localStorage.getItem(LD_KEY_user);
     let glevelInfo = localStorage.getItem(LD_KEY_level_score);
     game_maxlevel = 1;
     if (glevelInfo != null) {
