@@ -244,7 +244,7 @@ function mouseClicked(){
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 5; j++) {
                 if(j < locked[i]){
-                    if(dist(150+(170*j),160+(210*i),mouseX+32,mouseY+32)<65){
+                    if(dist(150+(170*j),160+(210*i),mouseX,mouseY)<65){
                         planetI = i;
                         planetJ = j;
                         return;
