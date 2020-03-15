@@ -44,7 +44,7 @@ var pre_ava = 0;
 
 ///////////////////////////
 
-const LD_KEY_GAME_NAME = 'catch_allen';
+const LD_KEY_GAME_NAME = 'catch_alien';
 
 ///////////////////////////
 
@@ -270,7 +270,7 @@ function start_UI() {
         let xx = width * lv / 5;
         let available_level = false;
         if (lv <= game_maxlevel ||
-            (lv == game_maxlevel + 1) && (game_level_score[game_maxlevel - 1] >= 250)
+            (lv == game_maxlevel + 1) && (game_level_score[game_maxlevel - 1] >= 55)
         ) {
             available_level = true;
         }
@@ -393,6 +393,7 @@ function load_data() {
 
 function save_level_status() {
 
+    game_score = Math.floor( game_score*100 / 450 ) ;
 
     if (game_score > game_level_score[game_level_selected - 1]) {
         game_level_score[game_level_selected - 1] = game_score;
