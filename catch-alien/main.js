@@ -14,43 +14,46 @@ var imgPkgFeet;
 var imgPkgSpaceship;
 var imgPkgReq;
 //----
-var sound_bg ;
-var sound_catch ;
+var sound_bg;
+var sound_catch;
 //////////////////////
 
 var game_start = false;
 var game_maxlevel;
 var game_level_score = [];
 var game_level_selected;
-var game_level_avatar_total ;
-var game_level_avatar_passed ;
+var game_level_avatar_total;
+var game_level_avatar_passed;
 var game_score = 0;
 var game_random_seed;
 
 var sprites_freq = 200;
 
-var target_question = null ;
+var target_question = null;
 var usr_name;
 
 ///////////////////////////
 
-const STAGE_PRE= 0 ;
-const STAGE_GO = 1 ;
-const STAGE_RUN= 2 ;
-const STAGE_END= 3 ;
-var GAME_STAGE ;
-var TARGET_AVATAR_PAUSE = false; 
+const STAGE_PRE = 0;
+const STAGE_GO = 1;
+const STAGE_RUN = 2;
+const STAGE_END = 3;
+var GAME_STAGE;
+var TARGET_AVATAR_PAUSE = false;
 var pre_ava = 0;
 
 ///////////////////////////
 
-const LD_KEY_user = 'user_name' ;
-const LD_KEY_level_score = 'game_catch_allen_level' ;
+const LD_KEY_GAME_NAME = 'catch_allen';
 
-function preload() {   
-     // sound
+///////////////////////////
+
+var database;
+
+function preload() {
+    // sound
     sound_bg = loadSound('Stuff.mp3');
-   }
+}
 
 function setup() {
     // createCanvas(1300, 800);
@@ -73,9 +76,9 @@ function setup() {
 
 
     // data
-    load_data() ;
+    load_data();
 
-    
+
 
 
     for (let i = 0; i < 7; i++) {
@@ -86,14 +89,14 @@ function setup() {
 
 
 
-    sound_catch = new p5.MonoSynth();        
+    sound_catch = new p5.MonoSynth();
     // Start the audio context on a click/touch event
-    userStartAudio().then(function() {     
+    userStartAudio().then(function () {
         // sound 
         sound_bg.setVolume(0.1);
         sound_bg.stop();
         sound_bg.play();
-     });
+    });
 
 }
 
@@ -123,30 +126,30 @@ function draw() {
     /////////////////// ----- target question & task & reset level
     //////////////////////////////////////////////
 
-    if( GAME_STAGE == STAGE_PRE ){
+    if (GAME_STAGE == STAGE_PRE) {
         target_question = genFeatureAtLevel(game_level_selected);
         game_random_seed = get_level_random_duration(game_level_selected);
-        TARGET_AVATAR_PAUSE=false ;
-        game_level_avatar_passed = 0 ;
-        GAME_STAGE++ ;
+        TARGET_AVATAR_PAUSE = false;
+        game_level_avatar_passed = 0;
+        GAME_STAGE++;
     }
-    if( GAME_STAGE == STAGE_RUN ){
-        target_question = null ;
-        if (sprites.length==0) { // all avatars leave       
-            if( game_level_avatar_total<9){
-                GAME_STAGE=STAGE_PRE ;
-            }else{
-                GAME_STAGE=STAGE_END ;
-            }            
+    if (GAME_STAGE == STAGE_RUN) {
+        target_question = null;
+        if (sprites.length == 0) { // all avatars leave       
+            if (game_level_avatar_total < 9) {
+                GAME_STAGE = STAGE_PRE;
+            } else {
+                GAME_STAGE = STAGE_END;
+            }
         }
     }
-    if( GAME_STAGE == STAGE_END ){
-        
+    if (GAME_STAGE == STAGE_END) {
+
         save_level_status();
-        
-        target_question = null ;
-        game_start = false ;
-        game_maxlevel = game_level_selected ;
+
+        target_question = null;
+        game_start = false;
+        game_maxlevel = game_level_selected;
         replay_sound();
     }
 
@@ -157,40 +160,40 @@ function draw() {
     ///////////////////////////////////////
 
     // create avatars
-    if ( GAME_STAGE==STAGE_GO && frameCount % sprites_freq == 0) {
-        
-        if (game_random_seed <= 0 && TARGET_AVATAR_PAUSE==false) {
+    if (GAME_STAGE == STAGE_GO && frameCount % sprites_freq == 0) {
+
+        if (game_random_seed <= 0 && TARGET_AVATAR_PAUSE == false) {
             let rfea = genFeatureLike(target_question);
-            let ava = new Avatar(-100, 550, imgPkg, imgPkgFeet, rfea) ;
-            ava.isAnswer = true ;
+            let ava = new Avatar(-100, 550, imgPkg, imgPkgFeet, rfea);
+            ava.isAnswer = true;
             sprites.push(ava);
             game_level_avatar_total++;
 
             game_random_seed = get_level_random_duration(game_level_selected);
         } else {
             let rfea = genFeatureUnlike(target_question);
-            let ava = new Avatar(-100, 550, imgPkg, imgPkgFeet, rfea) ;
-            
+            let ava = new Avatar(-100, 550, imgPkg, imgPkgFeet, rfea);
+
             sprites.push(ava);
         }
         game_random_seed--;
-        if(game_level_avatar_total - pre_ava>=3){
-            TARGET_AVATAR_PAUSE = true; 
-            pre_ava = game_level_avatar_total ;
+        if (game_level_avatar_total - pre_ava >= 3) {
+            TARGET_AVATAR_PAUSE = true;
+            pre_ava = game_level_avatar_total;
         }
         //console.log(fff) ;
     }
     //console.log("[total] "+game_level_avatar_total+" [passed] "+game_level_avatar_passed+"  "+TARGET_AVATAR_PAUSE);
-  
+
 
     for (const avatar of sprites) {
         avatar.draw();
-        if (GAME_STAGE==STAGE_RUN) {
+        if (GAME_STAGE == STAGE_RUN) {
             avatar.runaway();
         }
-        if(GAME_STAGE==STAGE_GO){
+        if (GAME_STAGE == STAGE_GO) {
             avatar.move();
-        }       
+        }
         if (random(0, 1) < 0.05) {
             avatar.jjump();
         }
@@ -210,18 +213,18 @@ function draw() {
     // remove sprites out of window
     if (sprites.length > 0) {
         if (sprites[0].dead || sprites[0].x > width) {
-            if( sprites[0].isAnswer){
-                game_level_avatar_passed++ ;
-                if( game_level_avatar_passed>=3 ){
-                    GAME_STAGE = STAGE_RUN ;
+            if (sprites[0].isAnswer) {
+                game_level_avatar_passed++;
+                if (game_level_avatar_passed >= 3) {
+                    GAME_STAGE = STAGE_RUN;
                 }
             }
             sprites.splice(0, 1);
-        } 
+        }
     }
-    
-    
-    
+
+
+
 
     //////////////////////////////////////////////
     ///////////////////// -------- space ship
@@ -230,14 +233,14 @@ function draw() {
     if (spaceship == null) {
         spaceship = new Spaceship(imgPkgSpaceship, imgPkgReq, -1500, 200);
         spaceship.target_x = width / 2;
-    }else{
+    } else {
         spaceship.draw();
         spaceship.target_x = mouseX;
-        spaceship.question = target_question ;
+        spaceship.question = target_question;
         //console.log(spaceship);
     }
- 
- 
+
+
 }
 
 function start_UI() {
@@ -265,15 +268,15 @@ function start_UI() {
 
         noStroke();
         let xx = width * lv / 5;
-        let available_level = false ;
-        if ( lv <= game_maxlevel || 
-            (lv == game_maxlevel + 1)&&(game_level_score[game_maxlevel-1]>=250)    
-            ) {
-            available_level = true ;
+        let available_level = false;
+        if (lv <= game_maxlevel ||
+            (lv == game_maxlevel + 1) && (game_level_score[game_maxlevel - 1] >= 250)
+        ) {
+            available_level = true;
         }
 
         // rectangle
-        if( available_level){
+        if (available_level) {
             fill(10, 10, 10, 200);
 
             if (game_level_selected == lv) {
@@ -283,14 +286,14 @@ function start_UI() {
             if (mouseX > xx - 90 && mouseX < xx + 90) {
                 game_level_selected = lv;
             }
-        }else{
+        } else {
             fill(100, 100, 100, 200);
         }
         rect(xx, yy, 180, 180);
-        
+
         // text
         textSize(60);
-        if ( available_level ) {
+        if (available_level) {
             fill(217, 85, 168);
         } else {
             fill(150, 150, 150, 200);
@@ -310,7 +313,7 @@ function start_UI() {
     noStroke();
     fill(255);
     showTextAlignCenter("按下［S］開始遊戲", height * 8.9 / 10, 60);
-    showTextAlignCenter( "達到 250 分，可以前進下一關",height*9.6/10,22) ;
+    showTextAlignCenter("達到 250 分，可以前進下一關", height * 9.6 / 10, 22);
 }
 
 function showTextAlignCenter(text_content, ty, tsize) {
@@ -322,14 +325,14 @@ function showTextAlignCenter(text_content, ty, tsize) {
 }
 
 function keyPressed() {
-    if (game_start==false && keyCode == 83) { // press ［S］
+    if (game_start == false && keyCode == 83) { // press ［S］
         game_start = true;
 
-        game_level_avatar_total=0;
-        game_level_avatar_passed=0;
-        GAME_STAGE=STAGE_PRE ;
+        game_level_avatar_total = 0;
+        game_level_avatar_passed = 0;
+        GAME_STAGE = STAGE_PRE;
 
-        game_score = 0 ;
+        game_score = 0;
         target_question = genFeatureAtLevel(game_level_selected);
         sprites = [];
 
@@ -337,62 +340,77 @@ function keyPressed() {
     }
 }
 
-function replay_sound(){
-    sound_bg.stop() ;
+function replay_sound() {
+    sound_bg.stop();
     sound_bg.play();
 }
 
-function load_data(){
+function load_data() {
 
-    usr_name = prompt('請輸入您的帳號') ;
+    // load admin-account
+    let admin_txt = getCookie('admin');
+    if (admin_txt != null && admin_txt.length > 0) {
+        database = new DataEngine(admin_txt);
+    } else {
+        database = new DataEngine();
+    }
 
-    //usr_name =''+ localStorage.getItem(LD_KEY_user);
-    let glevelInfo = localStorage.getItem(LD_KEY_level_score);
-    game_maxlevel = 1;
-    if (glevelInfo != null) {
-        let tokens = glevelInfo.split(":");
-        for (let i = 0; i < 4; i++) {
-            game_level_score.push(parseInt(tokens[i]));
-            if (game_level_score[i] != -1) {
-                game_maxlevel = i + 1;
-            }
+
+    // load user info
+    while (true) {
+        usr_name = '' + prompt('請輸入您的帳號');
+        if (usr_name != 'null' && usr_name.length > 0) {
+            break;
         }
-    }else{
-        game_level_score=[-1,-1,-1,-1] ;
+        alert('帳號不可以空白！！');
+    }
+    if (database.check_user_is_valid(usr_name, 'NOPWD') == true) {
+
+    } else {
+        database.create_user_password(usr_name, 'NOPWD');
+    }
+
+    // create game-log , 
+    // if the game records has existed , the function won't be overridden 
+    database.create_game(usr_name, LD_KEY_GAME_NAME, 4);
+
+    let p_count = database.db[usr_name][LD_KEY_GAME_NAME][database.FN_P_COUNT];
+    let p_record = database.db[usr_name][LD_KEY_GAME_NAME][database.FN_RECORD];
+    let p_record_score = p_record[p_record.length - 1][database.FN_SCORE];
+
+    game_maxlevel = 1;
+    for (let i = 0; i < p_count.length; i++) {
+        if (p_count[i] == 0) {
+            game_level_score.push(-1);
+        } else {
+            game_level_score.push(p_record_score[i]);
+            game_maxlevel = i + 1;
+        }
     }
     game_level_selected = game_maxlevel + 1;
-}
-
-function save_level_status(){
-
-    if( game_score >game_level_score[game_level_selected-1] ){
-        game_level_score[game_level_selected-1] = game_score ;
-    }    
-    export_score_to_localstorage() ;
     
-
-    //localStorage
 }
 
-function export_score_to_localstorage(){
-    // ex => 10:20:-1:-1
-    // export game_level_score to localstorage
-    var scoreStr = '' ;
-    for (let i = 0; i < 4; i++) {
-        scoreStr+=game_level_score[i]+':' ;
+function save_level_status() {
+
+
+    if (game_score > game_level_score[game_level_selected - 1]) {
+        game_level_score[game_level_selected - 1] = game_score;
+        database.add_game_record(usr_name, LD_KEY_GAME_NAME, game_level_selected - 1, game_score);
+        database.save_to_localstorage();
     }
-    localStorage.setItem( LD_KEY_level_score , scoreStr ) ;
-
+ 
 }
+
 
 function mouseClicked() {
 
-    if( spaceship==null){
-        return null ;
+    if (spaceship == null) {
+        return null;
     }
 
-    if( spaceship.open==true){
-        return null; 
+    if (spaceship.open == true) {
+        return null;
     }
     if (mouseY < 480 || mouseY > 620) {
         return null;
@@ -403,17 +421,17 @@ function mouseClicked() {
     }
 
     for (const a of sprites) {
-        if( a.dead == true ){
-            continue ;
+        if (a.dead == true) {
+            continue;
         }
         if (abs(a.x - mouseX) < 50) {
             sound_catch.play('A6');
             spaceship.open_tunnel();
             a.ship = spaceship;
-            if( a.isAnswer ){
-                game_score+=50 ;
-            }else{
-                game_score-=50 ;
+            if (a.isAnswer) {
+                game_score += 50;
+            } else {
+                game_score -= 50;
             }
             break;
         }
