@@ -1,8 +1,8 @@
 class Avatar {
-    constructor(x, y, img_Coin, img_Alien) {
+    constructor(x, y, imgPkgBadAlien, img_Alien) {
         this.x = x;
         this.y = y;
-        this.img_Coin = img_Coin;
+        this.imgPkgBadAlien = imgPkgBadAlien;
         this.img_Alien = img_Alien;
         this.ratio = 0.5;
         this.random = floor(random(0, 2));
@@ -27,7 +27,8 @@ class Avatar {
                 }
             }
         } else {
-            image(this.img_Coin, this.x, this.y, 256 * this.ratio, 256 * this.ratio);
+            //image(this.img_BadAlien, this.x, this.y, 256 * this.ratio, 256 * this.ratio);
+            this.imgPkgBadAlien.show(planetJ, planetI, this.x, this.y, this.ratio);
         }
 
     }
