@@ -1,3 +1,7 @@
+var usr_name;
+const LD_KEY_GAME_NAME = 'hit_bad_alien';
+var database;
+
 var x = 1;
 var iFrame = 0;
 
@@ -56,6 +60,48 @@ function setup(){
         sound_bg.setVolume(0.1);
         sound_bg.play();
     });
+    loadData();
+}
+function loadData(){
+    // load admin-account
+    let admin_txt = getCookie('admin');
+    if (admin_txt != null && admin_txt.length > 0) {
+        database = new DataEngine(admin_txt);
+    } else {
+        database = new DataEngine();
+    }
+
+
+    // load user info
+    while (true) {
+        usr_name = '' + prompt('請輸入您的帳號');
+        if (usr_name != 'null' && usr_name.length > 0) {
+            break;
+        }
+        alert('帳號不可以空白！！');
+    }
+    if (database.check_user_is_valid(usr_name, 'NOPWD') == true) {
+
+    } else {
+        database.create_user_password(usr_name, 'NOPWD');
+    }
+
+    // create game-log , 
+    // if the game records has existed , the function won't be overridden 
+    database.create_game(usr_name, LD_KEY_GAME_NAME, 15);
+
+    data = database.db[usr_name][LD_KEY_GAME_NAME][database.FN_RECORD];
+    var index = 0;
+    for(i = 0; i<3; i++){
+        for(j = 0; j<5; j++){
+            accuracy[i][j] = data[data.length-1][database.FN_SCORE][index]/100.0;
+            if(accuracy[i][j] >= 0.6){
+                locked[i]++;
+            }
+            index++;
+        }
+    }
+
 }
 function preload(){
     sound_bg = loadSound("Move_Out.mp3");
@@ -278,13 +324,16 @@ function mouseClicked(){
         }
     }
     function mouseClickedOnGamePanel(){
+        
         if(mouseX > 650 && mouseX < 790 && mouseY > 400 && mouseY < 470){
             switchToGame = false;
             if((score/(numCoins*50)) >= 0.6 && planetJ+1 == locked[planetI]){
                 locked[planetI]++;
             }
             if((score/(numCoins*50)) > accuracy[planetI][planetJ]){
-                accuracy[planetI][planetJ] = score/(numCoins*50)
+                accuracy[planetI][planetJ] = score/(numCoins*50);
+                database.add_game_record(usr_name,LD_KEY_GAME_NAME,(planetJ)+(planetI*5),Math.floor(score*100/(numCoins*50)));
+                database.save_to_localstorage();
             }
             displayStatus = false;
             reset();
