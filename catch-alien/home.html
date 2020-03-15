@@ -20,12 +20,24 @@
 
 <body>
     <div id='game'></div>
-    <h2>點擊畫面開啟音效</h2>
+    <p>輔導員：<span id="admin_id"></span></p>
+    <h5>點擊畫面開啟音效</h5>
     <h3>MUSIC</h3>
     <ul>
         <li>Stuff , <a href="https://www.youtube.com/channel/UCej6bRv8lR48AEbQvdb_9Cg" target="_blank">Otis McDonald</a>
         </li>
     </ul>
 </body>
+<script>
+
+
+    
+
+    window.onload = function () {
+        let admin_txt = getCookie('admin');
+        
+        document.getElementById('admin_id').textContent=admin_txt;
+    };
+</script>
 
 </html>
