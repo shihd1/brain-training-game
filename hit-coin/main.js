@@ -21,16 +21,18 @@ var sound_bg;
 var displayStatus = false;
 var switchToGame = false;
 
-var locked = [1,2,3];
+var locked = [1,1,1];
 var accuracy = [ [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0] ];
 
 var img_coin;
 var img_space_background;
 var img_planet_background;
 var img_angry_animation;
+var img_level_monster
 var img_planets;
 var imgPkg;
 var imgPkg1;
+var imgPkg2;
 
 var avatar = [];
 
@@ -40,13 +42,15 @@ var testmy=[];
 function setup(){
     let cnv = createCanvas(1420,750);
     cnv.parent('game');
-    img_coin = loadImage("Coin.png");
+    // img_coin = loadImage("Coin.png");
     img_space_background = loadImage("space.jpg");
     img_planet_background = loadImage("PlanetBakground.png");
     img_angry_animation = loadImage("AngryAlien.png");
+    img_level_monster = loadImage("ColorAndSizeLevelMonsters.png");
     imgPkg = new ImgPackage(img_angry_animation,256,256);
     img_planets = loadImage("planets.png");
     imgPkg1 = new ImgPackage(img_planets,64,64);
+    imgPkg2 = new ImgPackage(img_level_monster,256,256);
     reset();
     userStartAudio().then(function(){
         sound_bg.setVolume(0.1);
@@ -205,7 +209,7 @@ function reset(){
     avatar = [];
     lngth = 1;
     for (let i = 0; i< 23; i++) {
-        avatar.push(new Avatar(random(0,width-128),random(250, height-120),img_coin,imgPkg));
+        avatar.push(new Avatar(random(0,width-128),random(250, height-120),imgPkg2,imgPkg));
         if(avatar[i].random != 0){
             numCoins++;
         }
@@ -252,6 +256,12 @@ function mouseClicked(){
             console.log("play");
             if(planetI != -100){
                 console.log("switch to game: "+planetI+", "+planetJ);
+                if(planetI == 2){
+                    for (let i = 0; i < 23; i++) {
+                        avatar[i].speed_y = -7+(planetJ/2)^2;
+                        avatar[i].gravity = 0.08+(planetJ*0.02);
+                    }
+                }
                 switchToGame = true;
             }
             
