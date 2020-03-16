@@ -38,6 +38,7 @@ const STAGE_PRE = 0;
 const STAGE_GO = 1;
 const STAGE_RUN = 2;
 const STAGE_END = 3;
+const STAR = '⭐';
 var GAME_STAGE;
 var TARGET_AVATAR_PAUSE = false;
 var pre_ava = 0;
@@ -257,7 +258,7 @@ function start_UI() {
     }
 
     fill(250, 250, 0);
-    showTextAlignCenter(usr_name, height * 2 / 8, 140);
+    showTextAlignCenter(usr_name, height*2/9, 100);
 
     // rect
     rectMode(CENTER);
@@ -280,7 +281,7 @@ function start_UI() {
             fill(10, 10, 10, 200);
 
             if (game_level_selected == lv) {
-                stroke(255, 135, 0);
+                stroke(200, 200, 0);
                 strokeWeight(10);
             }
             if (mouseX > xx - 90 && mouseX < xx + 90) {
@@ -289,7 +290,7 @@ function start_UI() {
         } else {
             fill(100, 100, 100, 200);
         }
-        rect(xx, yy, 180, 180);
+        rect(xx, yy, 180, 220);
 
         // text
         textSize(60);
@@ -301,10 +302,20 @@ function start_UI() {
         text("LV " + lv, xx - 58, yy - 10);
 
         // score
-        textSize(40);
-        fill(225);
+        noStroke();
+        textSize(20);
+        fill(225);        
+        
         if (game_level_score[lv - 1] != -1) {
-            text("" + game_level_score[lv - 1], xx - 40, yy + 50);
+            let star_n = Math.floor( game_level_score[lv - 1]/10 ) ;
+            let star ='';
+            for (let i = 0; i < star_n; i++) {
+                star +=STAR ;
+                if( i==4 ){
+                    star+='\n' ;
+                }
+            }        
+            text(star, xx - 68, yy + 50) ;
         }
     }
 
