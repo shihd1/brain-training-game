@@ -24,6 +24,7 @@ var sound_bg;
 
 var displayStatus = false;
 var switchToGame = false;
+var switchToMenu = false;
 
 var locked = [1,1,1];
 var accuracy = [ [0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0] ];
@@ -115,9 +116,26 @@ function draw(){
         }
         drawGame();
         playGame();
-    }else{
+    }else if(switchToMenu == true){
         drawMenu();
+    }else{
+        drawStart();
     }
+}
+function drawStart(){
+    image(img_space_background,0,0,1420,750);
+    fill(73, 128, 130,150);
+    rect(300,150,800,400,10);
+    fill(255,255,255);
+    textFont('Courier');
+    textSize(50);
+    text("EVIL SPACE INVADERS!",400,360);
+    noFill();
+    stroke(255,255,255);
+    strokeWeight(2);
+    rect(800,450,250,80,30);
+    text("Play",865,500);
+    textFont('Arial');
 }
 function drawMenu(){
     drawImmovableBackground();
@@ -276,7 +294,7 @@ function keyPressed() {
     console.log(x);
 }
 function mouseClicked(){
-    if(switchToGame == false){
+    if(switchToMenu == true){
         mouseClickedOnMenu();
     }
     if(switchToGame == true){
@@ -284,6 +302,9 @@ function mouseClicked(){
     }
     if(displayStatus == true){
         mouseClickedOnGamePanel();
+    }
+    if(switchToMenu == false && switchToGame == false){
+        mouseClickedOnGameMenu();
     }
 }
     function mouseClickedOnMenu(){
@@ -309,6 +330,7 @@ function mouseClicked(){
                     }
                 }
                 switchToGame = true;
+                switchToMenu = false;
             }
             
         }
@@ -327,6 +349,7 @@ function mouseClicked(){
         
         if(mouseX > 650 && mouseX < 790 && mouseY > 400 && mouseY < 470){
             switchToGame = false;
+            switchToMenu = true;
             if((score/(numCoins*50)) >= 0.6 && planetJ+1 == locked[planetI]){
                 locked[planetI]++;
             }
@@ -337,5 +360,10 @@ function mouseClicked(){
             }
             displayStatus = false;
             reset();
+        }
+    }
+    function mouseClickedOnGameMenu(){
+        if(mouseX > 800 && mouseX < 1050 && mouseY > 450 && mouseY < 530){
+            switchToMenu = true;
         }
     }
