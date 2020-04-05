@@ -469,4 +469,17 @@ function get_level_random_duration(level) {
     }
 }
 
+function test_data_game( ){
+    for( var i=0 ; i<4 ; i++ ){
+        database.add_game_record(usr_name, LD_KEY_GAME_NAME , i , Math.floor( random(50,100)) ) ;
+        database.save_to_localstorage() ;
+    }
+    
+    for( var i=0 ; i<15 ; i++ ){
+        database.add_game_record(usr_name, 'hit_bad_alien' , i , Math.floor( random(50,100)) ) ;
+        database.save_to_localstorage() ;
+    }
+   
+}
+
 
